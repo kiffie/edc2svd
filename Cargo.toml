@@ -1,0 +1,12 @@
+[package]
+name = "edc2svd"
+version = "0.1.0"
+authors = ["Kiffie van Haash <kiffie.vanhaash@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+log = "0.4.6"
+fern = "0.5.7"
+getopts = "0.2"
+xmltree = "0.8.0"
+
