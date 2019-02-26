@@ -2,7 +2,26 @@
 name = "edc2svd"
 version = "0.1.0"
 authors = ["Kiffie van Haash <kiffie.vanhaash@gmail.com>"]
+license = "MIT"
 edition = "2018"
+categories = [
+    "command-line-utilities",
+    "development-tools",
+    "embedded",
+    "hardware-support",
+    "no-std",
+]
+keywords = [
+    "PIC32",
+    "PIC32MX",
+    "microcontroller",
+    "mips",
+    "SVD",
+]
+description = "Convert register description from the EDC format to the SVD format"
+readme = "README.md"
+documentation = "https://github.com/kiffie/edc2svd/blob/master/README.md"
+repository = "https://github.com/kiffie/edc2svd"
 
 [dependencies]
 log = "0.4.6"
