@@ -148,7 +148,9 @@ fn analyze_periph(periph: &Element, periph_out_e: &mut Element) {
                 cperi = grp.clone();
             } else if let Some(ms) = attr.get("_modsrc") {
                 cperi = if ms == "DOS-01618_RPINRx.Module" ||
-                           ms == "DOS-01618_RPORx.Module"
+                           ms == "DOS-01618_RPORx.Module"  ||
+                           ms == "DOS-01423_RPINRx.Module" ||
+                           ms == "DOS-01423_RPORx.Module"
                 {
                     String::from("PPS")
                 } else {
