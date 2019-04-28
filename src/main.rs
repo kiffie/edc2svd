@@ -60,21 +60,11 @@ fn add_register(peri_out_e: &mut Element,
     let registers = &mut peri_e.children.last_mut().unwrap();
 
     let mut reg_e = Element::new("register");
-    let mut name_e = Element::new("name");
-    name_e.text = Some(name.to_string());
-    let mut desc_e = Element::new("description");
-    desc_e.text = Some(format!("{} register", name));
-    let mut offset_e = Element::new("addressOffset");
-    offset_e.text = Some(format!("0x{:0x}", offset));
-    let mut size_e = Element::new("size");
-    size_e.text = Some(String::from("32"));
-    let mut reset_val_e = Element::new("resetValue");
-    reset_val_e.text = Some(format!("{}", reset_val));
-    reg_e.children.push(name_e);
-    reg_e.children.push(desc_e);
-    reg_e.children.push(offset_e);
-    reg_e.children.push(size_e);
-    reg_e.children.push(reset_val_e);
+    add_elem_with_text(&mut reg_e, "name", name);
+    add_elem_with_text(&mut reg_e, "description", &format!("{} register", name));
+    add_elem_with_text(&mut reg_e, "addressOffset", &format!("0x{:0x}", offset));
+    add_elem_with_text(&mut reg_e, "size", "32");
+    add_elem_with_text(&mut reg_e, "resetValue", &format!("{}", reset_val));
 
     // add field descriptions if any
     let mut fields_e = Element::new("fields");
