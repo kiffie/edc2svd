@@ -1,7 +1,7 @@
 [package]
 name = "edc2svd"
-version = "0.1.0"
-authors = ["Kiffie van Haash <kiffie.vanhaash@gmail.com>"]
+version = "0.2.0"
+authors = ["Kiffie"]
 license = "MIT"
 edition = "2018"
 categories = [
@@ -16,7 +16,7 @@ keywords = [
     "PIC32MX",
     "microcontroller",
     "mips",
-    "SVD",
+    "svd2rust",
 ]
 description = "Convert register description from the EDC format to the SVD format"
 readme = "README.md"

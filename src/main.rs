@@ -4,6 +4,8 @@
 //
 // Copyright (c) 2019 Kiffie van Haash
 //
+// SPDX-License-Identifier: MIT
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to
 // deal in the Software without restriction, including without limitation the
@@ -27,7 +29,7 @@ use getopts::Options;
 use std::env;
 use std::fs::File;
 
-use log::info;
+use log::{info, warn};
 use xmltree::{Element, EmitterConfig};
 
 
@@ -71,7 +73,10 @@ fn add_register(peri_out_e: &mut Element,
     let mut bitpos = 0;
     for elem in sfrmode_e.children.iter() {
         if elem.name == "SFRFieldDef" {
-            let fname = &elem.attributes["name"];
+            let fname = &elem.attributes["cname"];
+            if fname != &elem.attributes["name"] {
+                warn!("cname = {} but name = {}", fname, &elem.attributes["name"]);
+            }
             let width = parse_u32(&elem.attributes["nzwidth"]).unwrap();
             info!("\t\t[{}:{}]\t{}", bitpos + width - 1, bitpos, fname);
             let mut field_e = Element::new("field");
@@ -121,8 +126,11 @@ fn analyze_periph(periph: &Element, periph_out_e: &mut Element) {
             // get reset value; map unimplemented (-) or undefined (x) bits to 0
             let reset_str = attr["mclr"]
                 .replace("-", "0")
-                .replace("x", "0");
-            let reset = u32::from_str_radix(&reset_str, 2).unwrap();
+                .replace("x", "0")
+                .replace("u", "0");
+            let reset = u32::from_str_radix(&reset_str, 2).unwrap_or_else(|_|{
+                panic!("cannot parse mclr attribute string \"{}\"", attr["mclr"]);
+            });
 
             // guess peripheral
             let mop = match attr.get("memberofperipheral") {
@@ -143,6 +151,8 @@ fn analyze_periph(periph: &Element, periph_out_e: &mut Element) {
                            ms == "DOS-01423_RPORx.Module"
                 {
                     String::from("PPS")
+                }else if ms == "DOS-01475_lpwr_deep_sleep_ctrl_v2.Module" {
+                    String::from("DSCTRL") // Deep Sleep Controller
                 } else {
                     String::from("")
                 };
@@ -240,7 +250,7 @@ fn main() {
     setup_logger(if matches.opt_present("v") {
         log::LevelFilter::Info
     } else {
-        log::LevelFilter::Warn
+        log::LevelFilter::Error
     });
 
     if matches.opt_present("h") || matches.free.len() != 2 {
