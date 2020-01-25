@@ -28,7 +28,7 @@ dependencies = [
 
 [[package]]
 name = "edc2svd"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "fern 0.5.9 (registry+https://github.com/rust-lang/crates.io-index)",
  "getopts 0.2.21 (registry+https://github.com/rust-lang/crates.io-index)",
