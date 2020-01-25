@@ -99,6 +99,44 @@ fn add_register(peri_out_e: &mut Element,
     registers.children.push(reg_e);
 }
 
+// Add IRQ vectors to interrupt controller peripheral. Should normally be added
+// to the individual peripheral who trigger the respective IRQs but the relation
+// peripheral - irq vector is not coded into the PIC file
+fn add_irq_vectors(doc: &Element, peripherals: &mut Element) {
+
+    // find interrupt controller peripheral "INT" in svd treee
+    let mut intctrl: Option<&mut Element> = None;
+    for p in peripherals.children.iter_mut() {
+        if p.name == "peripheral" {
+            let name = p.get_child("name").unwrap();
+            if let Some(name_text) = &name.text {
+                if name_text == "INT" {
+                    intctrl = Some(p);
+                    break;
+                }
+            }
+        }
+    }
+    let ref mut intctrl = if let Some(ic) = intctrl {
+        ic
+    }else{
+        panic!("Cannot find Interrupt Controller Element");
+    };
+
+    // add IRQ vector numbers
+    let intlist = doc.get_child("InterruptList").unwrap();
+    for irq in intlist.children.iter() {
+        if irq.name == "Interrupt" {
+            let cname = irq.attributes["cname"].as_str();
+            let vect = irq.attributes["irq"].as_str();
+            let mut int_elem = Element::new("interrupt");
+            add_elem_with_text(&mut int_elem, "name", cname);
+            add_elem_with_text(&mut int_elem, "value", vect);
+            intctrl.children.push(int_elem);
+        }
+    }
+}
+
 fn analyze_periph(periph: &Element, periph_out_e: &mut Element) {
     let mut peri = String::new();
     let mut base_addr: u32 = 0;
@@ -250,7 +288,7 @@ fn main() {
     setup_logger(if matches.opt_present("v") {
         log::LevelFilter::Info
     } else {
-        log::LevelFilter::Error
+        log::LevelFilter::Warn
     });
 
     if matches.opt_present("h") || matches.free.len() != 2 {
@@ -280,6 +318,7 @@ fn main() {
             analyze_periph(child, &mut periph_out);
         }
     }
+    add_irq_vectors(&docelem, &mut periph_out);
     let outfile = File::create(&svdfn).expect(&format!("cannot open file {}", svdfn));
     let config = EmitterConfig::new().perform_indent(true);
     develem.children.push(periph_out);
