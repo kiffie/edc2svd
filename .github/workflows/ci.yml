@@ -1,0 +1,22 @@
+name: Test edc2svd
+
+on:
+    push:
+    pull_request:
+
+jobs:
+    ci-regtest:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                buildtype: ["", --release]
+        steps:
+            - uses: actions/checkout@v2
+            - uses: actions-rs/toolchain@v1
+              with:
+                profile: minimal
+                toolchain: stable
+                override: true
+            - run: cargo build ${{ matrix.buildtype }}
+            - run: ./test.sh
+              working-directory: ./ci/regtest
