@@ -25,7 +25,7 @@ repository = "https://github.com/kiffie/edc2svd"
 
 [dependencies]
 log = "0.4.6"
-fern = "0.5.7"
+fern = "0.6.1"
 getopts = "0.2"
 xmltree = "0.8.0"
 
