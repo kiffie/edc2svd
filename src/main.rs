@@ -32,7 +32,6 @@ use std::fs::File;
 use log::{info, warn};
 use xmltree::{Element, EmitterConfig};
 
-
 fn print_usage(program: &str, opts: Options) {
     let brief = format!("\nUsage: {} [options] <input.edc> <output.svd>", program);
     print!("{}", opts.usage(&brief));
@@ -41,23 +40,24 @@ fn print_usage(program: &str, opts: Options) {
 fn parse_u32(text: &str) -> Result<u32, std::num::ParseIntError> {
     if text.starts_with("0x") {
         u32::from_str_radix(&text[2..], 16)
-    }else{
+    } else {
         u32::from_str_radix(&text, 10)
     }
 }
 
-fn add_elem_with_text(parent: &mut Element, name: &str, text: &str){
+fn add_elem_with_text(parent: &mut Element, name: &str, text: &str) {
     let mut elem = Element::new(name);
     elem.text = Some(text.to_string());
     parent.children.push(elem);
 }
 
-fn add_register(peri_out_e: &mut Element,
-                name: &str,
-                offset: u32,
-                reset_val: u32,
-                sfrmode_e: &Element)
-{
+fn add_register(
+    peri_out_e: &mut Element,
+    name: &str,
+    offset: u32,
+    reset_val: u32,
+    sfrmode_e: &Element,
+) {
     let peri_e = &mut peri_out_e.children.last_mut().unwrap();
     let registers = &mut peri_e.children.last_mut().unwrap();
 
@@ -81,15 +81,17 @@ fn add_register(peri_out_e: &mut Element,
             info!("\t\t[{}:{}]\t{}", bitpos + width - 1, bitpos, fname);
             let mut field_e = Element::new("field");
             add_elem_with_text(&mut field_e, "name", fname);
-            add_elem_with_text(&mut field_e,
-                               "bitRange",
-                               &format!("[{}:{}]", bitpos + width - 1, bitpos));
+            add_elem_with_text(
+                &mut field_e,
+                "bitRange",
+                &format!("[{}:{}]", bitpos + width - 1, bitpos),
+            );
             fields_e.children.push(field_e);
             bitpos += width;
-        }else if elem.name == "AdjustPoint" {
+        } else if elem.name == "AdjustPoint" {
             let offset = parse_u32(&elem.attributes["offset"]).unwrap();
             bitpos += offset;
-        }else {
+        } else {
             panic!("unexpected element {} in field definition", elem.name);
         }
     }
@@ -103,7 +105,6 @@ fn add_register(peri_out_e: &mut Element,
 // to the individual peripheral who trigger the respective IRQs but the relation
 // peripheral - irq vector is not coded into the PIC file
 fn add_irq_vectors(doc: &Element, peripherals: &mut Element) {
-
     // find interrupt controller peripheral "INT" in svd treee
     let mut intctrl: Option<&mut Element> = None;
     for p in peripherals.children.iter_mut() {
@@ -119,7 +120,7 @@ fn add_irq_vectors(doc: &Element, peripherals: &mut Element) {
     }
     let intctrl = &mut (if let Some(ic) = intctrl {
         ic
-    }else{
+    } else {
         panic!("Cannot find Interrupt Controller Element");
     });
 
@@ -166,13 +167,19 @@ fn analyze_periph(periph: &Element, periph_out_e: &mut Element) {
                 .replace('-', "0")
                 .replace('x', "0")
                 .replace('u', "0");
-            let reset = u32::from_str_radix(&reset_str, 2).unwrap_or_else(|_|{
+            let reset = u32::from_str_radix(&reset_str, 2).unwrap_or_else(|_| {
                 panic!("cannot parse mclr attribute string \"{}\"", attr["mclr"]);
             });
 
             // guess peripheral
             let mop = match attr.get("memberofperipheral") {
-                Some(m) => if m.is_empty() { None } else { Some(m) },
+                Some(m) => {
+                    if m.is_empty() {
+                        None
+                    } else {
+                        Some(m)
+                    }
+                }
                 None => None,
             };
             let mut cperi: String;
@@ -183,13 +190,13 @@ fn analyze_periph(periph: &Element, periph_out_e: &mut Element) {
             } else if let Some(grp) = attr.get("grp") {
                 cperi = grp.clone();
             } else if let Some(ms) = attr.get("_modsrc") {
-                cperi = if ms == "DOS-01618_RPINRx.Module" ||
-                           ms == "DOS-01618_RPORx.Module"  ||
-                           ms == "DOS-01423_RPINRx.Module" ||
-                           ms == "DOS-01423_RPORx.Module"
+                cperi = if ms == "DOS-01618_RPINRx.Module"
+                    || ms == "DOS-01618_RPORx.Module"
+                    || ms == "DOS-01423_RPINRx.Module"
+                    || ms == "DOS-01423_RPORx.Module"
                 {
                     String::from("PPS")
-                }else if ms == "DOS-01475_lpwr_deep_sleep_ctrl_v2.Module" {
+                } else if ms == "DOS-01475_lpwr_deep_sleep_ctrl_v2.Module" {
                     String::from("DSCTRL") // Deep Sleep Controller
                 } else {
                     String::from("")
@@ -231,31 +238,58 @@ fn analyze_periph(periph: &Element, periph_out_e: &mut Element) {
             assert!(base_addr <= addr);
             let offset = addr - base_addr;
             info!("  {}", name);
-            info!("\t{}   : {:0x}, offset = {:0x}, reset = {:0x} ({})",
-                   name,
-                   addr, offset, reset,
-                   portals);
+            info!(
+                "\t{}   : {:0x}, offset = {:0x}, reset = {:0x} ({})",
+                name, addr, offset, reset, portals
+            );
             add_register(periph_out_e, name, offset, reset, sfrmode_e);
             if clr {
-                info!("\t{}CLR: {:0x}, offset = {:0x}",
+                info!(
+                    "\t{}CLR: {:0x}, offset = {:0x}",
                     name,
-                    addr + 0x4, offset + 0x04);
+                    addr + 0x4,
+                    offset + 0x04
+                );
                 // use 0 as reset value; read from this register is undefined
-                add_register(periph_out_e, &format!("{}CLR", name), offset + 4, 0, sfrmode_e);
+                add_register(
+                    periph_out_e,
+                    &format!("{}CLR", name),
+                    offset + 4,
+                    0,
+                    sfrmode_e,
+                );
             }
             if set {
-                info!("\t{}SET: {:0x}, offset = {:0x}",
+                info!(
+                    "\t{}SET: {:0x}, offset = {:0x}",
                     name,
-                    addr + 0x8, offset + 8);
+                    addr + 0x8,
+                    offset + 8
+                );
                 // use 0 as reset value; read from this register is undefined
-                add_register(periph_out_e, &format!("{}SET", name), offset + 8, 0, sfrmode_e);
+                add_register(
+                    periph_out_e,
+                    &format!("{}SET", name),
+                    offset + 8,
+                    0,
+                    sfrmode_e,
+                );
             }
             if inv {
-                info!("\t{}INV: {:0x}, offset = {:0x}",
+                info!(
+                    "\t{}INV: {:0x}, offset = {:0x}",
                     name,
-                    addr + 0xc, offset + 0xc);
+                    addr + 0xc,
+                    offset + 0xc
+                );
                 // use 0 as reset value; read from this register is undefined
-                add_register(periph_out_e, &format!("{}INV", name), offset + 0xc, 0, sfrmode_e);
+                add_register(
+                    periph_out_e,
+                    &format!("{}INV", name),
+                    offset + 0xc,
+                    0,
+                    sfrmode_e,
+                );
             }
             info!("");
         }
@@ -297,9 +331,7 @@ fn main() {
     }
     let (edcfn, svdfn) = (&matches.free[0], &matches.free[1]);
 
-    let infile = File::open(&edcfn).unwrap_or_else(|e| {
-        panic!("cannot open file {}: {}", edcfn, e)
-    });
+    let infile = File::open(&edcfn).unwrap_or_else(|e| panic!("cannot open file {}: {}", edcfn, e));
     let docelem = Element::parse(infile).unwrap();
     let name = &docelem.attributes["name"];
     let phys = docelem
@@ -313,8 +345,12 @@ fn main() {
     let mut periph_out = Element::new("peripherals");
 
     for child in phys.children.iter() {
-        if child.name == "SFRDataSector" && 
-           child.attributes.get("regionid").unwrap_or(&String::from("")).starts_with("periph")
+        if child.name == "SFRDataSector"
+            && child
+                .attributes
+                .get("regionid")
+                .unwrap_or(&String::from(""))
+                .starts_with("periph")
         {
             analyze_periph(child, &mut periph_out);
         }
