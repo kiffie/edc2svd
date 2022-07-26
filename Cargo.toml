@@ -22,6 +22,7 @@ description = "Convert register description from the EDC format to the SVD forma
 readme = "README.md"
 documentation = "https://github.com/kiffie/edc2svd/blob/master/README.md"
 repository = "https://github.com/kiffie/edc2svd"
+include = ["README.md", "/src", "LICENSE"]
 
 [dependencies]
 log = "0.4.6"
