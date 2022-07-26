@@ -80,7 +80,7 @@ fn add_register(peri_out_e: &mut Element,
             let width = parse_u32(&elem.attributes["nzwidth"]).unwrap();
             info!("\t\t[{}:{}]\t{}", bitpos + width - 1, bitpos, fname);
             let mut field_e = Element::new("field");
-            add_elem_with_text(&mut field_e, "name", &fname);
+            add_elem_with_text(&mut field_e, "name", fname);
             add_elem_with_text(&mut field_e,
                                "bitRange",
                                &format!("[{}:{}]", bitpos + width - 1, bitpos));
@@ -90,7 +90,7 @@ fn add_register(peri_out_e: &mut Element,
             let offset = parse_u32(&elem.attributes["offset"]).unwrap();
             bitpos += offset;
         }else {
-            panic!(format!("unexpected element {} in field definition", elem.name));
+            panic!("unexpected element {} in field definition", elem.name);
         }
     }
     if bitpos > 0 {
@@ -117,11 +117,11 @@ fn add_irq_vectors(doc: &Element, peripherals: &mut Element) {
             }
         }
     }
-    let ref mut intctrl = if let Some(ic) = intctrl {
+    let intctrl = &mut (if let Some(ic) = intctrl {
         ic
     }else{
         panic!("Cannot find Interrupt Controller Element");
-    };
+    });
 
     // add IRQ vector numbers
     let intlist = doc.get_child("InterruptList").unwrap();
@@ -158,21 +158,21 @@ fn analyze_periph(periph: &Element, periph_out_e: &mut Element) {
                 "CLR SET INV" => (true, true, true),
                 "CLR - -" => (true, false, false),
                 "- - -" => (false, false, false),
-                _ => panic!(format!("unexpected portals attribute: {}", portals)),
+                _ => panic!("unexpected portals attribute: {}", portals),
             };
 
             // get reset value; map unimplemented (-) or undefined (x) bits to 0
             let reset_str = attr["mclr"]
-                .replace("-", "0")
-                .replace("x", "0")
-                .replace("u", "0");
+                .replace('-', "0")
+                .replace('x', "0")
+                .replace('u', "0");
             let reset = u32::from_str_radix(&reset_str, 2).unwrap_or_else(|_|{
                 panic!("cannot parse mclr attribute string \"{}\"", attr["mclr"]);
             });
 
             // guess peripheral
             let mop = match attr.get("memberofperipheral") {
-                Some(m) => if m.len() == 0 { None } else { Some(m) },
+                Some(m) => if m.is_empty() { None } else { Some(m) },
                 None => None,
             };
             let mut cperi: String;
@@ -195,14 +195,14 @@ fn analyze_periph(periph: &Element, periph_out_e: &mut Element) {
                     String::from("")
                 };
             } else {
-                panic!(format!("missing peripheral for {}", name));
+                panic!("missing peripheral for {}", name);
             }
             let words: Vec<&str> = cperi.split(' ').collect();
-            if let Some(word) = words.get(0) {
+            if let Some(word) = words.first() {
                 cperi = word.to_string();
             }
-            if cperi.len() == 0 {
-                panic!(format!("empty peripheral info for {}", name));
+            if cperi.is_empty() {
+                panic!("empty peripheral info for {}", name);
             }
 
             // find first field definition
@@ -281,7 +281,7 @@ fn main() {
     let matches = match opts.parse(&args[1..]) {
         Ok(m) => m,
         Err(_) => {
-            print_usage(&program, opts);
+            print_usage(program, opts);
             return;
         }
     };
@@ -292,13 +292,14 @@ fn main() {
     });
 
     if matches.opt_present("h") || matches.free.len() != 2 {
-        print_usage(&program, opts);
+        print_usage(program, opts);
         return;
     }
     let (edcfn, svdfn) = (&matches.free[0], &matches.free[1]);
 
-    let infile = File::open(&edcfn)
-        .expect(&format!("cannot open file {}", edcfn));
+    let infile = File::open(&edcfn).unwrap_or_else(|e| {
+        panic!("cannot open file {}: {}", edcfn, e)
+    });
     let docelem = Element::parse(infile).unwrap();
     let name = &docelem.attributes["name"];
     let phys = docelem
@@ -319,7 +320,9 @@ fn main() {
         }
     }
     add_irq_vectors(&docelem, &mut periph_out);
-    let outfile = File::create(&svdfn).expect(&format!("cannot open file {}", svdfn));
+    let outfile = File::create(&svdfn).unwrap_or_else(|e| {
+        panic!("cannot open file {}: {}", svdfn, e);
+    });
     let config = EmitterConfig::new().perform_indent(true);
     develem.children.push(periph_out);
     develem.write_with_config(outfile, config).unwrap();
