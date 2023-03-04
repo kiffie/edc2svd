@@ -148,7 +148,10 @@ fn analyze_periph(periph: &Element, periph_out_e: &mut Element) {
             let addr = parse_u32(&attr["_addr"]).unwrap() | 0xA000_0000;
 
             let name = &attr["name"];
-            assert_eq!(name, &attr["cname"]);
+            let cname = &attr["cname"];
+            if name != cname {
+                warn!("cname = {} but name = {}", cname, name);
+            }
 
             let mut portals = String::from("- - -");
             if let Some(p) = attr.get("portals") {
@@ -162,11 +165,13 @@ fn analyze_periph(periph: &Element, periph_out_e: &mut Element) {
                 _ => panic!("unexpected portals attribute: {}", portals),
             };
 
-            // get reset value; map unimplemented (-) or undefined (x) bits to 0
+            // get reset value; map unimplemented (-) bits, undefined (x) bits or bits (q) defined
+            // in a configuration word to 0
             let reset_str = attr["mclr"]
                 .replace('-', "0")
                 .replace('x', "0")
-                .replace('u', "0");
+                .replace('u', "0")
+                .replace('q', "0");
             let reset = u32::from_str_radix(&reset_str, 2).unwrap_or_else(|_| {
                 panic!("cannot parse mclr attribute string \"{}\"", attr["mclr"]);
             });
