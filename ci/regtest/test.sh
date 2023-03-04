@@ -7,7 +7,7 @@ elif  [ -x ../../target/debug/edc2svd ]; then
     EDC2SVD=../../target/debug/edc2svd
 else
     echo "cannot find edc2svd"
-    exit -1
+    exit
 fi
 
 test_edc() {
@@ -23,12 +23,13 @@ test_edc() {
     #rm -f $temp
     if [ $result -ne 0 ]; then
         echo "aborting test script"
-        exit -1
+        exit
     fi
 }
 
 test_edc PIC32MX170F256B.PIC PIC32MX170F256B.svd
 test_edc PIC32MX274F256B.PIC PIC32MX274F256B.svd
 test_edc PIC32MX470F512H.PIC PIC32MX470F512H.svd
+test_edc PIC32MX695F512L.PIC PIC32MX695F512L.svd
 
 #end
