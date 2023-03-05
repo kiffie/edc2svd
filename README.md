@@ -1,4 +1,7 @@
 # edc2svd
+
+[![Crates.io](https://img.shields.io/crates/v/edc2svd.svg)](https://crates.io/crates/edc2svd)
+
 Convert an MCU register description from the EDC format to the SVD format
 
 EDC files are used to describe the special function registers of PIC32

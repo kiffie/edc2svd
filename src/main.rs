@@ -2,7 +2,7 @@
 // edc2svd
 // Converts an MCU register description from the EDC format to the SVD format
 //
-// Copyright (c) 2019 Kiffie van Haash
+// Copyright (c) 2019, 2023 Stephan <kiffie@mailbox.org>
 //
 // SPDX-License-Identifier: MIT
 //
@@ -30,7 +30,7 @@ use std::env;
 use std::fs::File;
 
 use log::{info, warn};
-use xmltree::{Element, EmitterConfig};
+use xmltree::{Element, EmitterConfig, XMLNode};
 
 fn print_usage(program: &str, opts: Options) {
     let brief = format!("\nUsage: {} [options] <input.edc> <output.svd>", program);
@@ -38,17 +38,17 @@ fn print_usage(program: &str, opts: Options) {
 }
 
 fn parse_u32(text: &str) -> Result<u32, std::num::ParseIntError> {
-    if text.starts_with("0x") {
-        u32::from_str_radix(&text[2..], 16)
+    if let Some(s) = text.strip_prefix("0x") {
+        u32::from_str_radix(s, 16)
     } else {
-        u32::from_str_radix(&text, 10)
+        text.parse()
     }
 }
 
 fn add_elem_with_text(parent: &mut Element, name: &str, text: &str) {
     let mut elem = Element::new(name);
-    elem.text = Some(text.to_string());
-    parent.children.push(elem);
+    elem.children.push(XMLNode::Text(text.to_string()));
+    parent.children.push(XMLNode::Element(elem));
 }
 
 fn add_register(
@@ -58,8 +58,8 @@ fn add_register(
     reset_val: u32,
     sfrmode_e: &Element,
 ) {
-    let peri_e = &mut peri_out_e.children.last_mut().unwrap();
-    let registers = &mut peri_e.children.last_mut().unwrap();
+    let peri_e = &mut peri_out_e.children.last_mut().unwrap().as_mut_element().unwrap();
+    let registers = &mut peri_e.children.last_mut().unwrap().as_mut_element().unwrap();
 
     let mut reg_e = Element::new("register");
     add_elem_with_text(&mut reg_e, "name", name);
@@ -71,7 +71,11 @@ fn add_register(
     // add field descriptions if any
     let mut fields_e = Element::new("fields");
     let mut bitpos = 0;
-    for elem in sfrmode_e.children.iter() {
+    for node in sfrmode_e.children.iter() {
+        let elem = match node {
+            XMLNode::Element(e) => e,
+            _ => continue,
+        };
         if elem.name == "SFRFieldDef" {
             let fname = &elem.attributes["cname"];
             if fname != &elem.attributes["name"] {
@@ -86,7 +90,7 @@ fn add_register(
                 "bitRange",
                 &format!("[{}:{}]", bitpos + width - 1, bitpos),
             );
-            fields_e.children.push(field_e);
+            fields_e.children.push(XMLNode::Element(field_e));
             bitpos += width;
         } else if elem.name == "AdjustPoint" {
             let offset = parse_u32(&elem.attributes["offset"]).unwrap();
@@ -96,9 +100,9 @@ fn add_register(
         }
     }
     if bitpos > 0 {
-        reg_e.children.push(fields_e);
+        reg_e.children.push(XMLNode::Element(fields_e));
     }
-    registers.children.push(reg_e);
+    registers.children.push(XMLNode::Element(reg_e));
 }
 
 // Add IRQ vectors to interrupt controller peripheral. Should normally be added
@@ -107,10 +111,14 @@ fn add_register(
 fn add_irq_vectors(doc: &Element, peripherals: &mut Element) {
     // find interrupt controller peripheral "INT" in svd treee
     let mut intctrl: Option<&mut Element> = None;
-    for p in peripherals.children.iter_mut() {
+    for node in peripherals.children.iter_mut() {
+        let p = match node {
+            XMLNode::Element(e) => e,
+            _ => continue,
+        };
         if p.name == "peripheral" {
             let name = p.get_child("name").unwrap();
-            if let Some(name_text) = &name.text {
+            if let Some(name_text) = name.get_text() {
                 if name_text == "INT" {
                     intctrl = Some(p);
                     break;
@@ -126,14 +134,18 @@ fn add_irq_vectors(doc: &Element, peripherals: &mut Element) {
 
     // add IRQ vector numbers
     let intlist = doc.get_child("InterruptList").unwrap();
-    for irq in intlist.children.iter() {
+    for node in intlist.children.iter() {
+        let irq = match node {
+            XMLNode::Element(e) => e,
+            _ => continue,
+        };
         if irq.name == "Interrupt" {
             let cname = irq.attributes["cname"].as_str();
             let vect = irq.attributes["irq"].as_str();
             let mut int_elem = Element::new("interrupt");
             add_elem_with_text(&mut int_elem, "name", cname);
             add_elem_with_text(&mut int_elem, "value", vect);
-            intctrl.children.push(int_elem);
+            intctrl.children.push(XMLNode::Element(int_elem));
         }
     }
 }
@@ -141,7 +153,11 @@ fn add_irq_vectors(doc: &Element, peripherals: &mut Element) {
 fn analyze_periph(periph: &Element, periph_out_e: &mut Element) {
     let mut peri = String::new();
     let mut base_addr: u32 = 0;
-    for child in periph.children.iter() {
+    for node in periph.children.iter() {
+        let child = match node {
+            XMLNode::Element(e) => e,
+            _ => continue,
+        };
         if child.name == "SFRDef" {
             let attr = &child.attributes;
             // get the phys. address and map it to the KSEG1 segment
@@ -167,26 +183,13 @@ fn analyze_periph(periph: &Element, periph_out_e: &mut Element) {
 
             // get reset value; map unimplemented (-) bits, undefined (x) bits or bits (q) defined
             // in a configuration word to 0
-            let reset_str = attr["mclr"]
-                .replace('-', "0")
-                .replace('x', "0")
-                .replace('u', "0")
-                .replace('q', "0");
+            let reset_str = attr["mclr"].replace(['-', 'x', 'u', 'q'], "0");
             let reset = u32::from_str_radix(&reset_str, 2).unwrap_or_else(|_| {
                 panic!("cannot parse mclr attribute string \"{}\"", attr["mclr"]);
             });
 
             // guess peripheral
-            let mop = match attr.get("memberofperipheral") {
-                Some(m) => {
-                    if m.is_empty() {
-                        None
-                    } else {
-                        Some(m)
-                    }
-                }
-                None => None,
-            };
+            let mop = attr.get("memberofperipheral").filter(|s| !s.is_empty());
             let mut cperi: String;
             if let Some(bop) = attr.get("baseofperipheral") {
                 cperi = bop.clone();
@@ -227,17 +230,17 @@ fn analyze_periph(periph: &Element, periph_out_e: &mut Element) {
                 peri = cperi;
                 let mut peri_e = Element::new("peripheral");
                 let mut name_e = Element::new("name");
-                name_e.text = Some(peri.clone());
+                name_e.children.push(XMLNode::Text(peri.clone()));
                 let mut desc_e = Element::new("description");
-                desc_e.text = Some(format!("{} peripheral", peri));
+                desc_e.children.push(XMLNode::Text(format!("{} peripheral", peri)));
                 let mut base_addr_e = Element::new("baseAddress");
-                base_addr_e.text = Some(format!("0x{:0x}", base_addr));
+                base_addr_e.children.push(XMLNode::Text(format!("0x{:0x}", base_addr)));
                 let registers_e = Element::new("registers");
-                peri_e.children.push(name_e);
-                peri_e.children.push(desc_e);
-                peri_e.children.push(base_addr_e);
-                peri_e.children.push(registers_e);
-                periph_out_e.children.push(peri_e);
+                peri_e.children.push(XMLNode::Element(name_e));
+                peri_e.children.push(XMLNode::Element(desc_e));
+                peri_e.children.push(XMLNode::Element(base_addr_e));
+                peri_e.children.push(XMLNode::Element(registers_e));
+                periph_out_e.children.push(XMLNode::Element(peri_e));
                 info!("{} base_addr = {:0x}", peri, base_addr);
             }
             assert!(base_addr <= addr);
@@ -336,7 +339,7 @@ fn main() {
     }
     let (edcfn, svdfn) = (&matches.free[0], &matches.free[1]);
 
-    let infile = File::open(&edcfn).unwrap_or_else(|e| panic!("cannot open file {}: {}", edcfn, e));
+    let infile = File::open(edcfn).unwrap_or_else(|e| panic!("cannot open file {}: {}", edcfn, e));
     let docelem = Element::parse(infile).unwrap();
     let name = &docelem.attributes["name"];
     let phys = docelem
@@ -345,11 +348,15 @@ fn main() {
 
     let mut develem = Element::new("device");
     let mut name_e = Element::new("name");
-    name_e.text = Some(name.to_string());
-    develem.children.push(name_e);
+    name_e.children.push(XMLNode::Text(name.to_string()));
+    develem.children.push(XMLNode::Element(name_e));
     let mut periph_out = Element::new("peripherals");
 
-    for child in phys.children.iter() {
+    for node in phys.children.iter() {
+        let child = match node {
+            XMLNode::Element(e) => e,
+            _ => continue,
+        };
         if child.name == "SFRDataSector"
             && child
                 .attributes
@@ -361,10 +368,10 @@ fn main() {
         }
     }
     add_irq_vectors(&docelem, &mut periph_out);
-    let outfile = File::create(&svdfn).unwrap_or_else(|e| {
+    let outfile = File::create(svdfn).unwrap_or_else(|e| {
         panic!("cannot open file {}: {}", svdfn, e);
     });
     let config = EmitterConfig::new().perform_indent(true);
-    develem.children.push(periph_out);
+    develem.children.push(XMLNode::Element(periph_out));
     develem.write_with_config(outfile, config).unwrap();
 }

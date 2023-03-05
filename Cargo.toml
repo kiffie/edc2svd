@@ -25,8 +25,8 @@ repository = "https://github.com/kiffie/edc2svd"
 include = ["README.md", "/src", "LICENSE"]
 
 [dependencies]
-log = "0.4.6"
+log = "0.4.17"
 fern = "0.6.1"
 getopts = "0.2"
-xmltree = "0.8.0"
+xmltree = "0.10.3"
 
