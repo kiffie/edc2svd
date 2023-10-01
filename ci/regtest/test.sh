@@ -11,25 +11,24 @@ else
 fi
 
 test_edc() {
-    local edc=$1
-    local svd=$2
-    shift 2
+    local edc=$1.PIC
+    local svd=$1.svd
+    local lib=$1.lib.rs
+    shift 1
     local args=$*
     temp=$(mktemp --suffix .svd)
     echo "executing $EDC2SVD $args $edc $temp"
     $EDC2SVD $args $edc $temp
-    diff -us $svd $temp
-    result=$?
+    diff -us $svd $temp || exit
     #rm -f $temp
-    if [ $result -ne 0 ]; then
-        echo "aborting test script"
-        exit
-    fi
+    echo "executing svd2rust --target mips -i $svd"
+    svd2rust --target mips -i $svd
+    diff -us $lib lib.rs || exit
 }
 
-test_edc PIC32MX170F256B.PIC PIC32MX170F256B.svd
-test_edc PIC32MX274F256B.PIC PIC32MX274F256B.svd
-test_edc PIC32MX470F512H.PIC PIC32MX470F512H.svd
-test_edc PIC32MX695F512L.PIC PIC32MX695F512L.svd
+test_edc PIC32MX170F256B
+test_edc PIC32MX274F256B
+test_edc PIC32MX470F512H
+test_edc PIC32MX695F512L
 
 #end
