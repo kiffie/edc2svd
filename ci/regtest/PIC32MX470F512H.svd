@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <device>
   <name>PIC32MX470F512H</name>
+  <width>32</width>
   <peripherals>
     <peripheral>
       <name>INT</name>
       <description>INT peripheral</description>
       <baseAddress>0xbf881000</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x150</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>INTCON</name>
@@ -4866,6 +4872,11 @@
       <name>BMX</name>
       <description>BMX peripheral</description>
       <baseAddress>0xbf882000</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x80</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>BMXCON</name>
@@ -5284,6 +5295,11 @@
       <name>DMAC</name>
       <description>DMAC peripheral</description>
       <baseAddress>0xbf883000</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x60</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>DMACON</name>
@@ -5779,6 +5795,11 @@
       <name>DMAC0</name>
       <description>DMAC0 peripheral</description>
       <baseAddress>0xbf883060</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0xc0</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>DCH0CON</name>
@@ -6858,6 +6879,11 @@
       <name>DMAC1</name>
       <description>DMAC1 peripheral</description>
       <baseAddress>0xbf883120</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0xc0</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>DCH1CON</name>
@@ -7937,6 +7963,11 @@
       <name>DMAC2</name>
       <description>DMAC2 peripheral</description>
       <baseAddress>0xbf8831e0</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0xc0</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>DCH2CON</name>
@@ -9016,6 +9047,11 @@
       <name>DMAC3</name>
       <description>DMAC3 peripheral</description>
       <baseAddress>0xbf8832a0</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0xc0</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>DCH3CON</name>
@@ -10095,6 +10131,11 @@
       <name>PCACHE</name>
       <description>PCACHE peripheral</description>
       <baseAddress>0xbf884000</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0xd0</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>CHECON</name>
@@ -10549,6 +10590,11 @@
       <name>USB</name>
       <description>USB peripheral</description>
       <baseAddress>0xbf885040</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x3c0</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>U1OTGIR</name>
@@ -14138,6 +14184,11 @@
       <name>PORTB</name>
       <description>PORTB peripheral</description>
       <baseAddress>0xbf886100</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0xa0</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>ANSELB</name>
@@ -16857,6 +16908,11 @@
       <name>PORTC</name>
       <description>PORTC peripheral</description>
       <baseAddress>0xbf886200</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0xa0</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>ANSELC</name>
@@ -17848,6 +17904,11 @@
       <name>PORTD</name>
       <description>PORTD peripheral</description>
       <baseAddress>0xbf886300</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0xa0</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>ANSELD</name>
@@ -19847,6 +19908,11 @@
       <name>PORTE</name>
       <description>PORTE peripheral</description>
       <baseAddress>0xbf886400</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0xa0</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>ANSELE</name>
@@ -21366,6 +21432,11 @@
       <name>PORTF</name>
       <description>PORTF peripheral</description>
       <baseAddress>0xbf886500</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0xa0</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>ANSELF</name>
@@ -22417,6 +22488,11 @@
       <name>PORTG</name>
       <description>PORTG peripheral</description>
       <baseAddress>0xbf886600</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0xa0</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>ANSELG</name>
@@ -23408,6 +23484,11 @@
       <name>WDT</name>
       <description>WDT peripheral</description>
       <baseAddress>0xbf800000</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x10</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>WDTCON</name>
@@ -23515,6 +23596,11 @@
       <name>RTCC</name>
       <description>RTCC peripheral</description>
       <baseAddress>0xbf800200</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x60</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>RTCCON</name>
@@ -24378,6 +24464,11 @@
       <name>TMR1</name>
       <description>TMR1 peripheral</description>
       <baseAddress>0xbf800600</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x30</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>T1CON</name>
@@ -24669,6 +24760,11 @@
       <name>TMR2</name>
       <description>TMR2 peripheral</description>
       <baseAddress>0xbf800800</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x30</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>T2CON</name>
@@ -24928,6 +25024,11 @@
       <name>TMR3</name>
       <description>TMR3 peripheral</description>
       <baseAddress>0xbf800a00</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x30</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>T3CON</name>
@@ -25171,6 +25272,11 @@
       <name>TMR4</name>
       <description>TMR4 peripheral</description>
       <baseAddress>0xbf800c00</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x30</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>T4CON</name>
@@ -25430,6 +25536,11 @@
       <name>TMR5</name>
       <description>TMR5 peripheral</description>
       <baseAddress>0xbf800e00</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x30</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>T5CON</name>
@@ -25673,6 +25784,11 @@
       <name>ICAP1</name>
       <description>ICAP1 peripheral</description>
       <baseAddress>0xbf802000</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x20</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>IC1CON</name>
@@ -25889,6 +26005,11 @@
       <name>ICAP2</name>
       <description>ICAP2 peripheral</description>
       <baseAddress>0xbf802200</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x20</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>IC2CON</name>
@@ -26105,6 +26226,11 @@
       <name>ICAP3</name>
       <description>ICAP3 peripheral</description>
       <baseAddress>0xbf802400</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x20</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>IC3CON</name>
@@ -26321,6 +26447,11 @@
       <name>ICAP4</name>
       <description>ICAP4 peripheral</description>
       <baseAddress>0xbf802600</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x20</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>IC4CON</name>
@@ -26537,6 +26668,11 @@
       <name>ICAP5</name>
       <description>ICAP5 peripheral</description>
       <baseAddress>0xbf802800</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x20</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>IC5CON</name>
@@ -26753,6 +26889,11 @@
       <name>OCMP1</name>
       <description>OCMP1 peripheral</description>
       <baseAddress>0xbf803000</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x30</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>OC1CON</name>
@@ -27012,6 +27153,11 @@
       <name>OCMP2</name>
       <description>OCMP2 peripheral</description>
       <baseAddress>0xbf803200</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x30</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>OC2CON</name>
@@ -27271,6 +27417,11 @@
       <name>OCMP3</name>
       <description>OCMP3 peripheral</description>
       <baseAddress>0xbf803400</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x30</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>OC3CON</name>
@@ -27530,6 +27681,11 @@
       <name>OCMP4</name>
       <description>OCMP4 peripheral</description>
       <baseAddress>0xbf803600</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x30</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>OC4CON</name>
@@ -27789,6 +27945,11 @@
       <name>OCMP5</name>
       <description>OCMP5 peripheral</description>
       <baseAddress>0xbf803800</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x30</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>OC5CON</name>
@@ -28048,6 +28209,11 @@
       <name>I2C1</name>
       <description>I2C1 peripheral</description>
       <baseAddress>0xbf805000</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x70</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>I2C1CON</name>
@@ -28812,6 +28978,11 @@
       <name>I2C2</name>
       <description>I2C2 peripheral</description>
       <baseAddress>0xbf805100</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x70</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>I2C2CON</name>
@@ -29576,6 +29747,11 @@
       <name>SPI1</name>
       <description>SPI1 peripheral</description>
       <baseAddress>0xbf805800</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x50</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>SPI1CON</name>
@@ -30444,6 +30620,11 @@
       <name>SPI2</name>
       <description>SPI2 peripheral</description>
       <baseAddress>0xbf805a00</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x50</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>SPI2CON</name>
@@ -31312,6 +31493,11 @@
       <name>UART1</name>
       <description>UART1 peripheral</description>
       <baseAddress>0xbf806000</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x50</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>U1MODE</name>
@@ -31933,6 +32119,11 @@
       <name>UART2</name>
       <description>UART2 peripheral</description>
       <baseAddress>0xbf806200</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x50</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>U2MODE</name>
@@ -32554,6 +32745,11 @@
       <name>UART3</name>
       <description>UART3 peripheral</description>
       <baseAddress>0xbf806400</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x50</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>U3MODE</name>
@@ -33175,6 +33371,11 @@
       <name>UART4</name>
       <description>UART4 peripheral</description>
       <baseAddress>0xbf806600</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x50</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>U4MODE</name>
@@ -33796,6 +33997,11 @@
       <name>PMP</name>
       <description>PMP peripheral</description>
       <baseAddress>0xbf807000</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x70</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>PMCON</name>
@@ -34663,6 +34869,11 @@
       <name>ADC10</name>
       <description>ADC10 peripheral</description>
       <baseAddress>0xbf809000</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x170</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>AD1CON1</name>
@@ -35442,6 +35653,11 @@
       <name>CVR</name>
       <description>CVR peripheral</description>
       <baseAddress>0xbf809800</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x10</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>CVRCON</name>
@@ -35565,6 +35781,11 @@
       <name>CMP1</name>
       <description>CMP1 peripheral</description>
       <baseAddress>0xbf80a000</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x10</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>CM1CON</name>
@@ -35720,6 +35941,11 @@
       <name>CMP2</name>
       <description>CMP2 peripheral</description>
       <baseAddress>0xbf80a010</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x10</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>CM2CON</name>
@@ -35875,6 +36101,11 @@
       <name>CMP</name>
       <description>CMP peripheral</description>
       <baseAddress>0xbf80a060</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x10</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>CMSTAT</name>
@@ -35982,6 +36213,11 @@
       <name>CTMU</name>
       <description>CTMU peripheral</description>
       <baseAddress>0xbf80a200</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x10</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>CTMUCON</name>
@@ -36313,6 +36549,11 @@
       <name>OSC</name>
       <description>OSC peripheral</description>
       <baseAddress>0xbf80f000</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x40</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>OSCCON</name>
@@ -36896,6 +37137,11 @@
       <name>CFG</name>
       <description>CFG peripheral</description>
       <baseAddress>0xbf80f200</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0xa0</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>CFGCON</name>
@@ -37729,6 +37975,11 @@
       <name>NVM</name>
       <description>NVM peripheral</description>
       <baseAddress>0xbf80f400</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x50</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>NVMCON</name>
@@ -37959,6 +38210,11 @@
       <name>RCON</name>
       <description>RCON peripheral</description>
       <baseAddress>0xbf80f600</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x20</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>RCON</name>
@@ -38214,6 +38470,11 @@
       <name>PPS</name>
       <description>PPS peripheral</description>
       <baseAddress>0xbf80fa04</baseAddress>
+      <addressBlock>
+        <offset>0x0</offset>
+        <size>0x2b0</size>
+        <usage>registers</usage>
+      </addressBlock>
       <registers>
         <register>
           <name>INT1R</name>

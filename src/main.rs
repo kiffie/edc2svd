@@ -235,11 +235,15 @@ fn analyze_periph(periph: &Element, periph_out_e: &mut Element) {
                 desc_e.children.push(XMLNode::Text(format!("{} peripheral", peri)));
                 let mut base_addr_e = Element::new("baseAddress");
                 base_addr_e.children.push(XMLNode::Text(format!("0x{:0x}", base_addr)));
+                let mut address_block_e = Element::new("addressBlock");
+                add_elem_with_text(&mut address_block_e, "offset", "0x0");
+                // Address block size is re-written after iterating each register
+                add_elem_with_text(&mut address_block_e, "size", "0x0");
+                add_elem_with_text(&mut address_block_e, "usage", "registers");
                 let registers_e = Element::new("registers");
-                peri_e.children.push(XMLNode::Element(name_e));
-                peri_e.children.push(XMLNode::Element(desc_e));
-                peri_e.children.push(XMLNode::Element(base_addr_e));
-                peri_e.children.push(XMLNode::Element(registers_e));
+                for e in [name_e, desc_e, base_addr_e, address_block_e, registers_e] {
+                    peri_e.children.push(XMLNode::Element(e));
+                }
                 periph_out_e.children.push(XMLNode::Element(peri_e));
                 info!("{} base_addr = {:0x}", peri, base_addr);
             }
@@ -300,6 +304,20 @@ fn analyze_periph(periph: &Element, periph_out_e: &mut Element) {
                 );
             }
             info!("");
+
+            // Update the address block size
+            periph_out_e
+                .children
+                .last_mut()
+                .unwrap()
+                .as_mut_element()
+                .unwrap()
+                .get_mut_child("addressBlock")
+                .unwrap()
+                .get_mut_child("size")
+                .unwrap()
+                // Allow space for 4 registers, even if not all are defined
+                .children[0] = XMLNode::Text(format!("{:#x}", offset + 0x10));
         }
     }
 }
@@ -347,9 +365,9 @@ fn main() {
         .expect("PhysicalSpace element missing");
 
     let mut develem = Element::new("device");
-    let mut name_e = Element::new("name");
-    name_e.children.push(XMLNode::Text(name.to_string()));
-    develem.children.push(XMLNode::Element(name_e));
+    add_elem_with_text(&mut develem, "name", name);
+    add_elem_with_text(&mut develem, "width", "32");
+
     let mut periph_out = Element::new("peripherals");
 
     for node in phys.children.iter() {
