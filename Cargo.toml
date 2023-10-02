@@ -1,7 +1,7 @@
 [package]
 name = "edc2svd"
-version = "0.4.0"
-authors = ["Kiffie"]
+version = "0.5.0"
+authors = ["Stephan <kiffie@mailbox.org>"]
 license = "MIT"
 edition = "2018"
 categories = [
@@ -29,4 +29,3 @@ log = "0.4.17"
 fern = "0.6.1"
 getopts = "0.2"
 xmltree = "0.10.3"
-
